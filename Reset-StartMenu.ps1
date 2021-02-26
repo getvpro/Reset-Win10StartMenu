@@ -24,6 +24,9 @@ Feb 25, 2020
 March 31, 2020
 -Added copy for chrome.lnk from default to %AppData% for user
 
+Feb 26, 2021
+-Added IF statements / EA to stop errors from being thrown
+
 .DESCRIPTION
 Author owen.reynolds@procontact.ca & jonathan.pitre@procontact.ca
 
@@ -65,10 +68,19 @@ If ($UserResponse -eq "YES" ) {
 
     write-host "Reseting windows left / right side Windows 10 icons/allignment"
 
-    Copy-Item -path "C:\Users\Default\AppData\Local\Microsoft\Windows\Shell\LayoutModification.xml" -Destination "$env:LOCALAPPDATA\Microsoft\Windows\Shell" -force
+    if (test-path "C:\Users\Default\AppData\Local\Microsoft\Windows\Shell\LayoutModification.xml"-ErrorAction SilentlyContinue) {
+
+        Copy-Item -path "C:\Users\Default\AppData\Local\Microsoft\Windows\Shell\LayoutModification.xml" -Destination "$env:LOCALAPPDATA\Microsoft\Windows\Shell" -force
+
+    }
+    
     Remove-Item 'HKCU:\Software\Microsoft\Windows\CurrentVersion\CloudStore\Store\Cache\DefaultAccount\*$start.tilegrid$windows.data.curatedtilecollection.tilecollection' -force -recurse -ErrorAction SilentlyContinue
 
-    copy-item -Path "C:\Users\Default\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned\Taskbar\Google Chrome.lnk" -Destination "$Env:AppData\Microsoft\Internet Explorer\Quick Launch\User Pinned\Taskbar\" -Force
+    if (test-path "C:\Users\Default\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned\Taskbar\Google Chrome.lnk" -ErrorAction SilentlyContinue) {
+
+        copy-item -Path "C:\Users\Default\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned\Taskbar\Google Chrome.lnk" -Destination "$Env:AppData\Microsoft\Internet Explorer\Quick Launch\User Pinned\Taskbar\" -Force
+
+    }
         
     get-process shellexperiencehost -ErrorAction SilentlyContinue | stop-process -force -ErrorAction SilentlyContinue
     
